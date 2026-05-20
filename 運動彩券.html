@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 SportsBet Share — 運動彩券分享平台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ═══════════ CSS RESET & 全域 ═══════════ */
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-card: rgba(255,255,255,0.04);
+            --accent-green: #39FF14;
+            --accent-orange: #FF6B35;
+            --accent-red: #ff4757;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --border-color: rgba(255,255,255,0.08);
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(57,255,20,0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255,107,53,0.03) 0%, transparent 50%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ═══════════ NAVBAR ═══════════ */
+        .navbar {
+            position: fixed; top:0; left:0; width:100%; height: 64px;
+            background: rgba(13,17,23,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; z-index: 1000;
+        }
+        .navbar .logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem; font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-orange));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            cursor: pointer; display:flex; align-items:center; gap:8px;
+        }
+        .navbar .logo i { -webkit-text-fill-color: var(--accent-green); font-size:1.3rem; }
+        .nav-links { display:flex; align-items:center; gap:8px; }
+        .nav-links .nav-btn {
+            background: transparent; border: 1px solid var(--border-color);
+            color: var(--text-secondary); padding: 8px 16px;
+            border-radius: 8px; cursor: pointer; font-size: 0.88rem;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: var(--transition); display:flex; align-items:center; gap:6px;
+        }
+        .nav-links .nav-btn:hover, .nav-links .nav-btn.active {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            background: rgba(57,255,20,0.06);
+        }
+        .nav-links .nav-btn.user-btn {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+        .nav-links .nav-btn.user-btn .mini-avatar {
+            width:22px; height:22px; border-radius:50%; object-fit:cover;
+            border: 1.5px solid var(--accent-orange);
+        }
+        .hamburger {
+            display:none; background:none; border:none; color:var(--text-primary);
+            font-size:1.4rem; cursor:pointer;
+        }
+
+        /* ═══════════ MAIN CONTENT ═══════════ */
+        .main-content { padding-top: 84px; padding-bottom:40px; min-height:100vh; position:relative; z-index:1; }
+        .page { display:none; max-width:720px; margin:0 auto; padding:0 16px; }
+        .page.active { display:block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ═══════════ AUTH PAGE ═══════════ */
+        .auth-container {
+            max-width: 420px; margin: 40px auto;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius); padding: 40px 32px;
+            box-shadow: var(--shadow);
+        }
+        .auth-container h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.8rem; text-align:center; margin-bottom:8px;
+        }
+        .auth-container .subtitle {
+            text-align:center; color:var(--text-secondary); font-size:0.9rem; margin-bottom:28px;
+        }
+        .auth-tabs { display:flex; margin-bottom:28px; border-radius:10px; overflow:hidden; border:1px solid var(--border-color); }
+        .auth-tab {
+            flex:1; padding:10px; text-align:center; cursor:pointer;
+            background: transparent; color:var(--text-secondary);
+            font-size:0.95rem; font-weight:500; transition:var(--transition);
+            border:none; font-family: 'Noto Sans TC', sans-serif;
+        }
+        .auth-tab.active { background:var(--accent-green); color:#000; font-weight:700; }
+        .form-group { margin-bottom:18px; }
+        .form-group label { display:block; margin-bottom:6px; font-size:0.85rem; color:var(--text-secondary); }
+        .form-group input[type="text"],
+        .form-group input[type="password"] {
+            width:100%; padding:12px 14px;
+            background: var(--bg-primary); border:1px solid var(--border-color);
+            border-radius:10px; color:var(--text-primary);
+            font-size:0.95rem; outline:none; transition:var(--transition);
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .form-group input:focus { border-color:var(--accent-green); box-shadow:0 0 0 3px rgba(57,255,20,0.1); }
+        .avatar-upload { display:flex; align-items:center; gap:16px; }
+        .avatar-preview {
+            width:64px; height:64px; border-radius:50%;
+            background: var(--bg-primary); border:2px dashed var(--border-color);
+            display:flex; align-items:center; justify-content:center;
+            overflow:hidden; flex-shrink:0; font-size:1.5rem; color:var(--text-secondary);
+        }
+        .avatar-preview img { width:100%; height:100%; object-fit:cover; }
+        .avatar-upload-btn {
+            padding:8px 16px; background:transparent;
+            border:1px solid var(--accent-orange); color:var(--accent-orange);
+            border-radius:8px; cursor:pointer; font-size:0.85rem;
+            transition:var(--transition); font-family: 'Noto Sans TC', sans-serif;
+        }
+        .avatar-upload-btn:hover { background:rgba(255,107,53,0.1); }
+        .auth-submit {
+            width:100%; padding:14px; border:none; border-radius:10px;
+            font-size:1rem; font-weight:700; cursor:pointer;
+            transition:var(--transition); margin-top:8px;
+            font-family: 'Oswald', sans-serif; letter-spacing:1px;
+        }
+        .auth-submit.login-btn { background:var(--accent-green); color:#000; }
+        .auth-submit.login-btn:hover { background:#2dd610; transform:translateY(-2px); box-shadow:0 6px 24px rgba(57,255,20,0.25); }
+        .auth-submit.register-btn { background:var(--accent-orange); color:#fff; }
+        .auth-submit.register-btn:hover { background:#e55a25; transform:translateY(-2px); box-shadow:0 6px 24px rgba(255,107,53,0.25); }
+        .auth-error { color:var(--accent-red); font-size:0.85rem; margin-top:8px; text-align:center; min-height:20px; }
+
+        /* ═══════════ PROFILE PAGE ═══════════ */
+        .profile-header {
+            text-align:center; padding:32px 0; margin-bottom:24px;
+            background: var(--bg-secondary); border-radius:var(--radius);
+            border:1px solid var(--border-color); position:relative; overflow:hidden;
+        }
+        .profile-header::before {
+            content:''; position:absolute; top:0; left:0; width:100%; height:4px;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-orange));
+        }
+        .profile-avatar {
+            width:90px; height:90px; border-radius:50%; margin:0 auto 12px;
+            border:3px solid var(--accent-green); overflow:hidden;
+            display:flex; align-items:center; justify-content:center;
+            background:var(--bg-primary); font-size:2.2rem; font-family:'Oswald',sans-serif;
+            color:var(--accent-green);
+        }
+        .profile-avatar img { width:100%; height:100%; object-fit:cover; }
+        .profile-header h2 { font-family:'Oswald',sans-serif; font-size:1.5rem; }
+        .profile-header .profile-id { color:var(--text-secondary); font-size:0.9rem; margin-top:2px; }
+        .new-post-btn {
+            display:flex; align-items:center; justify-content:center; gap:8px;
+            width:100%; padding:16px; margin-bottom:24px;
+            background: linear-gradient(135deg, rgba(57,255,20,0.1), rgba(255,107,53,0.1));
+            border:1px dashed var(--accent-green);
+            border-radius:var(--radius); cursor:pointer;
+            color:var(--accent-green); font-size:1rem; font-weight:500;
+            transition:var(--transition); font-family: 'Noto Sans TC', sans-serif;
+        }
+        .new-post-btn:hover { background: linear-gradient(135deg, rgba(57,255,20,0.18), rgba(255,107,53,0.18)); transform:translateY(-2px); }
+        .section-title {
+            font-family:'Oswald',sans-serif; font-size:1.2rem;
+            margin-bottom:16px; display:flex; align-items:center; gap:8px;
+            color:var(--text-secondary);
+        }
+        .section-title .accent { color:var(--accent-orange); }
+        .empty-state {
+            text-align:center; padding:48px 16px; color:var(--text-secondary);
+            font-size:0.95rem;
+        }
+        .empty-state i { font-size:2.5rem; margin-bottom:12px; display:block; color:var(--accent-orange); }
+
+        /* ═══════════ POST EDITOR ═══════════ */
+        .editor-header {
+            display:flex; align-items:center; gap:12px; margin-bottom:24px;
+            padding-bottom:16px; border-bottom:1px solid var(--border-color);
+        }
+        .editor-avatar {
+            width:48px; height:48px; border-radius:50%; overflow:hidden;
+            border:2px solid var(--accent-green); flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;
+            background:var(--bg-primary); font-family:'Oswald',sans-serif; color:var(--accent-green); font-size:1.2rem;
+        }
+        .editor-avatar img { width:100%; height:100%; object-fit:cover; }
+        .editor-user-info .editor-name { font-weight:500; font-size:1rem; }
+        .editor-user-info .editor-id { font-size:0.8rem; color:var(--text-secondary); }
+        .editor-form { display:flex; flex-direction:column; gap:16px; }
+        .editor-form input[type="text"],
+        .editor-form textarea {
+            width:100%; padding:14px 16px;
+            background:var(--bg-primary); border:1px solid var(--border-color);
+            border-radius:12px; color:var(--text-primary); font-size:0.95rem;
+            outline:none; transition:var(--transition); resize:vertical;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .editor-form textarea { min-height:150px; }
+        .editor-form input:focus, .editor-form textarea:focus { border-color:var(--accent-green); box-shadow:0 0 0 3px rgba(57,255,20,0.1); }
+        .image-upload-area {
+            border:1px dashed var(--border-color); border-radius:12px;
+            padding:24px; text-align:center; cursor:pointer; transition:var(--transition);
+            color:var(--text-secondary);
+        }
+        .image-upload-area:hover { border-color:var(--accent-orange); background:rgba(255,107,53,0.04); }
+        .image-upload-area i { font-size:1.8rem; margin-bottom:8px; display:block; }
+        .image-preview-container { position:relative; display:inline-block; margin-top:8px; }
+        .image-preview-container img { max-width:100%; max-height:200px; border-radius:10px; }
+        .remove-image {
+            position:absolute; top:-8px; right:-8px;
+            width:28px; height:28px; border-radius:50%;
+            background:var(--accent-red); color:#fff; border:none;
+            cursor:pointer; font-size:0.8rem; display:flex;align-items:center;justify-content:center;
+        }
+        .editor-actions { display:flex; gap:12px; margin-top:8px; }
+        .editor-actions button {
+            flex:1; padding:14px; border:none; border-radius:10px;
+            font-size:1rem; font-weight:600; cursor:pointer;
+            transition:var(--transition); font-family: 'Oswald', sans-serif; letter-spacing:0.5px;
+        }
+        .btn-publish { background:var(--accent-green); color:#000; }
+        .btn-publish:hover { background:#2dd610; transform:translateY(-2px); box-shadow:0 6px 24px rgba(57,255,20,0.25); }
+        .btn-cancel { background:transparent; border:1px solid var(--border-color)!important; color:var(--text-secondary); }
+        .btn-cancel:hover { border-color:var(--accent-red)!important; color:var(--accent-red); }
+
+        /* ═══════════ POST CARD ═══════════ */
+        .post-card {
+            background: var(--bg-secondary);
+            border:1px solid var(--border-color);
+            border-radius:var(--radius); margin-bottom:20px;
+            overflow:hidden; transition:var(--transition);
+            position:relative;
+        }
+        .post-card::before {
+            content:''; position:absolute; top:0; left:0; width:4px; height:100%;
+            background: linear-gradient(180deg, var(--accent-green), var(--accent-orange));
+            opacity:0; transition:var(--transition);
+        }
+        .post-card:hover { transform:translateY(-3px); box-shadow:var(--shadow); border-color:rgba(57,255,20,0.15); }
+        .post-card:hover::before { opacity:1; }
+        .post-card-header { display:flex; align-items:center; gap:12px; padding:16px 20px 0; }
+        .post-card-avatar {
+            width:44px; height:44px; border-radius:50%; overflow:hidden;
+            border:2px solid var(--accent-green); flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;
+            background:var(--bg-primary); font-family:'Oswald',sans-serif; color:var(--accent-green); font-size:1rem;
+        }
+        .post-card-avatar img { width:100%; height:100%; object-fit:cover; }
+        .post-card-meta .post-card-name { font-weight:500; font-size:0.95rem; }
+        .post-card-meta .post-card-time { font-size:0.78rem; color:var(--text-secondary); }
+        .post-card-body { padding:12px 20px 16px; }
+        .post-card-title {
+            font-family:'Oswald',sans-serif; font-size:1.2rem; font-weight:600;
+            margin-bottom:8px; color:var(--accent-green);
+        }
+        .post-card-content { font-size:0.93rem; line-height:1.7; color:var(--text-secondary); white-space:pre-wrap; word-break:break-word; }
+        .post-card-image { padding:0 20px 16px; }
+        .post-card-image img { width:100%; border-radius:12px; cursor:pointer; transition:var(--transition); }
+        .post-card-image img:hover { transform:scale(1.01); }
+        .post-card-footer {
+            display:flex; align-items:center; gap:4px;
+            padding:12px 20px; border-top:1px solid var(--border-color);
+        }
+        .post-action-btn {
+            display:flex; align-items:center; gap:6px;
+            padding:8px 14px; border:none; background:transparent;
+            color:var(--text-secondary); border-radius:8px;
+            cursor:pointer; font-size:0.88rem; transition:var(--transition);
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .post-action-btn:hover { background:rgba(255,255,255,0.06); }
+        .post-action-btn.liked { color:var(--accent-red); }
+        .post-action-btn.liked i { animation: heartBeat 0.4s ease; }
+        @keyframes heartBeat { 0%{transform:scale(1)} 50%{transform:scale(1.3)} 100%{transform:scale(1)} }
+
+        /* ═══════════ COMMENTS ═══════════ */
+        .comments-section {
+            display:none; padding:0 20px 16px;
+            border-top:1px solid var(--border-color); margin-top:0;
+        }
+        .comments-section.open { display:block; animation:fadeIn 0.3s ease; }
+        .comment-item {
+            display:flex; gap:10px; padding:12px 0;
+            border-bottom:1px solid rgba(255,255,255,0.03);
+        }
+        .comment-item:last-of-type { border-bottom:none; }
+        .comment-avatar {
+            width:32px; height:32px; border-radius:50%; overflow:hidden;
+            flex-shrink:0; display:flex;align-items:center;justify-content:center;
+            background:var(--bg-primary); font-size:0.7rem;
+            font-family:'Oswald',sans-serif; color:var(--accent-orange);
+            border:1px solid var(--border-color);
+        }
+        .comment-avatar img { width:100%; height:100%; object-fit:cover; }
+        .comment-body { flex:1; }
+        .comment-body .comment-author { font-weight:500; font-size:0.85rem; }
+        .comment-body .comment-text { font-size:0.85rem; color:var(--text-secondary); margin-top:2px; word-break:break-word; }
+        .comment-body .comment-time { font-size:0.72rem; color:var(--text-secondary); margin-top:4px; opacity:0.6; }
+        .comment-input-wrap {
+            display:flex; gap:8px; margin-top:12px; align-items:center;
+        }
+        .comment-input-wrap input {
+            flex:1; padding:10px 14px;
+            background:var(--bg-primary); border:1px solid var(--border-color);
+            border-radius:20px; color:var(--text-primary); font-size:0.88rem;
+            outline:none; transition:var(--transition);
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .comment-input-wrap input:focus { border-color:var(--accent-green); }
+        .comment-send-btn {
+            width:38px; height:38px; border-radius:50%;
+            background:var(--accent-green); color:#000; border:none;
+            cursor:pointer; display:flex;align-items:center;justify-content:center;
+            font-size:0.9rem; transition:var(--transition); flex-shrink:0;
+        }
+        .comment-send-btn:hover { background:#2dd610; transform:scale(1.08); }
+
+        /* ═══════════ MODAL ═══════════ */
+        .modal-overlay {
+            display:none; position:fixed; top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);
+            z-index:2000; align-items:center; justify-content:center;
+        }
+        .modal-overlay.show { display:flex; animation:fadeIn 0.25s ease; }
+        .modal-box {
+            background:var(--bg-secondary); border:1px solid var(--border-color);
+            border-radius:var(--radius); padding:32px; max-width:380px; width:90%;
+            text-align:center; box-shadow:var(--shadow);
+        }
+        .modal-box i.modal-icon { font-size:2.5rem; color:var(--accent-orange); margin-bottom:16px; }
+        .modal-box h3 { font-family:'Oswald',sans-serif; margin-bottom:8px; font-size:1.3rem; }
+        .modal-box p { color:var(--text-secondary); font-size:0.9rem; margin-bottom:24px; }
+        .modal-actions { display:flex; gap:10px; }
+        .modal-actions button {
+            flex:1; padding:12px; border-radius:10px; border:none;
+            font-size:0.9rem; font-weight:600; cursor:pointer;
+            transition:var(--transition); font-family:'Noto Sans TC',sans-serif;
+        }
+        .modal-actions .btn-go-auth { background:
+var(--accent-green); color:#000; }
+        .modal-actions .btn-go-auth:hover { background:#2dd610; }
+        .modal-actions .btn-close-modal { background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); }
+        .modal-actions .btn-close-modal:hover { border-color:var(--accent-red); color:var(--accent-red); }
+
+        /* ═══════════ CAPTCHA MODAL ═══════════ */
+        .captcha-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .captcha-item {
+            position: relative;
+            cursor: pointer;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            border: 3px solid transparent;
+            transition: var(--transition);
+        }
+        .captcha-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .captcha-item.selected {
+            border-color: var(--accent-green);
+            transform: scale(0.95);
+        }
+        .captcha-item.selected::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--accent-green);
+            color: #000;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .captcha-header {
+            background: var(--accent-green);
+            color: #000;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .captcha-header h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .captcha-header h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+            margin-bottom: 0;
+        }
+        .captcha-error {
+            color: var(--accent-red);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            min-height: 20px;
+        }
+
+        /* ═══════════ IMAGE LIGHTBOX ═══════════ */
+        .lightbox-overlay {
+            display:none; position:fixed; top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.9); z-index:3000;
+            align-items:center; justify-content:center; cursor:zoom-out;
+        }
+        .lightbox-overlay.show { display:flex; animation:fadeIn 0.3s ease; }
+        .lightbox-overlay img { max-width:92%; max-height:92%; border-radius:8px; object-fit:contain; }
+
+        /* ═══════════ TOAST NOTIFICATION ═══════════ */
+        .toast {
+            position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(80px);
+            background:var(--bg-secondary); border:1px solid var(--accent-green);
+            color:var(--text-primary); padding:14px 28px; border-radius:12px;
+            font-size:0.9rem; z-index:4000; opacity:0;
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+            box-shadow:0 8px 32px rgba(57,255,20,0.15);
+            pointer-events:none;
+        }
+        .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+        /* ═══════════ LOADING SCREEN ═══════════ */
+        .loading-screen {
+            position:fixed; top:0;left:0;width:100%;height:100%;
+            background:var(--bg-primary); z-index:9999;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            transition: opacity 0.5s ease;
+        }
+        .loading-screen.hide { opacity:0; pointer-events:none; }
+        .loading-spinner {
+            width:48px; height:48px; border:3px solid var(--border-color);
+            border-top-color:var(--accent-green); border-radius:50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        .loading-screen p { margin-top:16px; color:var(--text-secondary); font-size:0.9rem; font-family:'Oswald',sans-serif; letter-spacing:2px; }
+
+        /* ═══════════ SCROLLBAR ═══════════ */
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background:var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background:var(--border-color); border-radius:3px; }
+        ::-webkit-scrollbar-thumb:hover { background:var(--accent-green); }
+
+        /* ═══════════ RWD ═══════════ */
+        @media (max-width:640px) {
+            .navbar { padding:0 14px; }
+            .nav-links { 
+                display:none; flex-direction:column;
+                position:absolute; top:64px; left:0; width:100%;
+                background:rgba(13,17,23,0.97); backdrop-filter:blur(20px);
+                padding:12px; gap:6px; border-bottom:1px solid var(--border-color);
+            }
+            .nav-links.open { display:flex; animation:fadeIn 0.3s ease; }
+            .nav-links .nav-btn { width:100%; justify-content:center; }
+            .hamburger { display:block; }
+            .auth-container { margin:20px 12px; padding:28px 20px; }
+            .post-card-body { padding:10px 16px 14px; }
+            .post-card-header { padding:14px 16px 0; }
+            .post-card-footer { padding:10px 16px; }
+            .post-card-image { padding:0 16px 14px; }
+            .comments-section { padding:0 16px 14px; }
+            .editor-actions { flex-direction:column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════ LOADING ═══════════ -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <p>LOADING...</p>
+    </div>
+
+    <!-- ═══════════ NAVBAR ═══════════ -->
+    <nav class="navbar">
+        <div class="logo" onclick="navigate('feed')"><i class="fas fa-trophy"></i> SPORTSBET SHARE</div>
+        <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></button>
+        <div class="nav-links" id="navLinks">
+            <button class="nav-btn" onclick="navigate('feed')"><i class="fas fa-globe"></i> 分享區</button>
+            <button class="nav-btn" id="navProfile" onclick="navigate('profile')" style="display:none;"><i class="fas fa-user"></i> 個人首頁</button>
+            <button class="nav-btn" id="navAuth" onclick="navigate('auth')"><i class="fas fa-sign-in-alt"></i> 登入</button>
+            <button class="nav-btn user-btn" id="navUser" style="display:none;">
+                <img class="mini-avatar" id="navUserAvatar" src="" alt="">
+                <span id="navUserName"></span>
+            </button>
+            <button class="nav-btn" id="navLogout" onclick="logout()" style="display:none;"><i class="fas fa-sign-out-alt"></i> 登出</button>
+        </div>
+    </nav>
+
+    <!-- ═══════════ MAIN ═══════════ -->
+    <div class="main-content">
+
+        <!-- PAGE: AUTH (登入 / 註冊) -->
+        <div class="page" id="page-auth">
+            <div class="auth-container">
+                <h2>⚽ 歡迎加入</h2>
+                <p class="subtitle">與全台彩迷一起分享你的預測與戰績</p>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">登入</button>
+                    <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">註冊</button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <div id="loginForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-id-badge"></i> 使用者 ID</label>
+                        <input type="text" id="loginID" placeholder="輸入你的 ID" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> 密碼</label>
+                        <input type="password" id="loginPassword" placeholder="輸入密碼">
+                    </div>
+                    <div class="auth-error" id="loginError"></div>
+                    <button class="auth-submit login-btn" onclick="handleLogin()">LOGIN</button>
+                </div>
+
+                <!-- REGISTER FORM -->
+                <div id="registerForm" style="display:none;">
+                    <div class="form-group">
+                        <label><i class="fas fa-id-badge"></i> 使用者 ID（唯一識別）</label>
+                        <input type="text" id="regID" placeholder="例如: king_of_bets" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> 顯示名稱</label>
+                        <input type="text" id="regName" placeholder="你想被稱呼的名字" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> 密碼（至少 4 字元）</label>
+                        <input type="password" id="regPassword" placeholder="設定密碼">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-camera"></i> 上傳頭貼（可選）</label>
+                        <div class="avatar-upload">
+                            <div class="avatar-preview" id="regAvatarPreview"><i class="fas fa-user"></i></div>
+                            <label class="avatar-upload-btn" for="regAvatarInput"><i class="fas fa-upload"></i> 選擇圖片</label>
+                            <input type="file" id="regAvatarInput" accept="image/*" style="display:none;" onchange="previewRegAvatar(event)">
+                        </div>
+                    </div>
+                    <div class="auth-error" id="registerError"></div>
+                    <button class="auth-submit register-btn" onclick="handleRegister()">REGISTER</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE: PROFILE (個人首頁) -->
+        <div class="page" id="page-profile">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar"></div>
+                <h2 id="profileName"></h2>
+                <p class="profile-id" id="profileID"></p>
+            </div>
+            <button class="new-post-btn" onclick="navigate('editor')"><i class="fas fa-plus-circle"></i> 新增貼文</button>
+            <div class="section-title"><span class="accent">▎</span>我的貼文</div>
+            <div id="profilePosts"></div>
+        </div>
+
+        <!-- PAGE: EDITOR (發文畫面) -->
+        <div class="page" id="page-editor">
+            <div class="auth-container" style="max-width:600px;">
+                <div class="editor-header">
+                    <div class="editor-avatar" id="editorAvatar"></div>
+                    <div class="editor-user-info">
+                        <div class="editor-name" id="editorName"></div>
+                        <div class="editor-id" id="editorID"></div>
+                    </div>
+                </div>
+                <div class="editor-form">
+                    <input type="text" id="postTitle" placeholder="📌 發布主題（例如：今日 NBA 推薦）">
+                    <textarea id="postContent" placeholder="✍️ 寫下你的分析、預測或心得..."></textarea>
+                    <div class="image-upload-area" id="postImageArea" onclick="document.getElementById('postImageInput').click()">
+                        <i class="fas fa-image"></i>
+                        <p>點擊上傳圖片（可選）</p>
+                    </div>
+                    <div class="image-preview-container" id="postImagePreview" style="display:none;"></div>
+                    <input type="file" id="postImageInput" accept="image/*" style="display:none;" onchange="previewPostImage(event)">
+                    <div class="editor-actions">
+                        <button class="btn-cancel" onclick="navigate('profile')"><i class="fas fa-times"></i> 取消</button>
+                        <button class="btn-publish" onclick="handlePublish()"><i class="fas fa-paper-plane"></i> 發布貼文</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE: FEED (分享區) -->
+        <div class="page" id="page-feed">
+            <div class="section-title" style="font-size:1.4rem;margin-bottom:20px;">
+                <i class="fas fa-fire" style="color:var(--accent-orange);"></i> 即時動態牆
+            </div>
+            <div id="feedPosts"></div>
+        </div>
+    </div>
+
+    <!-- ═══════════ MODAL: 未登入提示 ═══════════ -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-box">
+            <i class="fas fa-user-lock modal-icon"></i>
+            <h3>尚未登入</h3>
+            <p>你需要登入才能進行此操作。<br>是否有平台帳號？</p>
+            <div class="modal-actions">
+                <button class="btn-close-modal" onclick="closeModal()">取消</button>
+                <button class="btn-go-auth" onclick="closeModal();navigate('auth')">前往登入 / 註冊</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════ MODAL: 九宮格 CAPTCHA ═══════════ -->
+    <div class="modal-overlay" id="captchaModal">
+        <div class="modal-box" style="padding:24px; max-width:400px;">
+            <div class="captcha-header">
+                <h4>請選取所有包含</h4>
+                <h3>🏀 籃球</h3>
+                <h4>的圖片</h4>
+            </div>
+            <div class="captcha-grid" id="captchaGrid">
+                <!-- 圖片由 JS 動態生成 -->
+            </div>
+            <div class="captcha-error" id="captchaError"></div>
+            <div class="modal-actions" style="margin-top:16px;">
+                <button class="btn-close-modal" onclick="closeCaptchaModal()"><i class="fas fa-times"></i> 取消登入</button>
+                <button class="btn-go-auth" onclick="verifyCaptcha()"><i class="fas fa-check-circle"></i> 驗證</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════ LIGHTBOX ═══════════ -->
+    <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+        <img id="lightboxImg" src="" alt="Preview">
+    </div>
+
+    <!-- ═══════════ TOAST ═══════════ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- ═══════════ JAVASCRIPT ═══════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <script>
+        /* ═══════════ DATA LAYER ═══════════ */
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('sb_users') || '[]');
+        }
+        function saveUsers(users) {
+            localStorage.setItem('sb_users', JSON.stringify(users));
+        }
+        function getPosts() {
+            return JSON.parse(localStorage.getItem('sb_posts') || '[]');
+        }
+        function savePosts(posts) {
+            localStorage.setItem('sb_posts', JSON.stringify(posts));
+        }
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('sb_currentUser') || 'null');
+        }
+        function setCurrentUser(user) {
+            localStorage.setItem('sb_currentUser', JSON.stringify(user));
+        }
+        function clearCurrentUser() {
+            localStorage.removeItem('sb_currentUser');
+        }
+
+        /* ═══════════ UTILS ═══════════ */
+        function generateID() {
+            return 'p' + Date.now() + Math.random().toString(36).substring(2, 7);
+        }
+
+        function timeAgo(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const mins = Math.floor(diff / 60000);
+            const hrs = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            if (mins < 1) return '剛剛';
+            if (mins < 60) return mins + ' 分鐘前';
+            if (hrs < 24) return hrs + ' 小時前';
+            if (days < 30) return days + ' 天前';
+            return new Date(timestamp).toLocaleDateString('zh-TW');
+        }
+
+        function getAvatarHTML(avatarURL, username, size) {
+            if (avatarURL) {
+                return `<img src="${avatarURL}" alt="${username}">`;
+            }
+            const initial = (username || '?').charAt(0).toUpperCase();
+            return `<span style="font-size:${size === 'sm' ? '0.7rem' : size === 'lg' ? '2.2rem' : '1rem'}">${initial}</span>`;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2800);
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        /* ═══════════ NAVIGATION ═══════════ */
+        let currentPage = 'feed';
+
+        function navigate(page, targetUserID = null) {
+            // 關閉手機選單
+            document.getElementById('navLinks').classList.remove('open');
+
+            // 編輯頁面必須登入
+            if (page === 'editor' && !getCurrentUser()) {
+                document.getElementById('authModal').classList.add('show');
+                return;
+            }
+            // 若為個人首頁，且未指定看誰，則代表看自己，必須登入
+            if (page === 'profile' && !targetUserID && !getCurrentUser()) {
+                document.getElementById('authModal').classList.add('show');
+                return;
+            }
+
+            currentPage = page;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-' + page);
+            if (target) target.classList.add('active');
+
+            // 根據頁面渲染內容
+            if (page === 'feed') renderFeed();
+            if (page === 'profile') renderProfile(targetUserID);
+            if (page === 'editor') setupEditor();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateNavbar() {
+            const user = getCurrentUser();
+            const navAuth = document.getElementById('navAuth');
+            const navProfile = document.getElementById('navProfile');
+            const navUser = document.getElementById('navUser');
+            const navLogout = document.getElementById('navLogout');
+
+            if (user) {
+                navAuth.style.display = 'none';
+                navProfile.style.display = 'flex';
+                navUser.style.display = 'flex';
+                navLogout.style.display = 'flex';
+                document.getElementById('navUserName').textContent = user.username;
+                const avatarEl = document.getElementById('navUserAvatar');
+                if (user.avatarURL) {
+                    avatarEl.src = user.avatarURL;
+                    avatarEl.style.display = 'block';
+                } else {
+                    avatarEl.style.display = 'none';
+                }
+            } else {
+                navAuth.style.display = 'flex';
+                navProfile.style.display = 'none';
+                navUser.style.display = 'none';
+                navLogout.style.display = 'none';
+            }
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('navLinks').classList.toggle('open');
+        }
+
+        /* ═══════════ AUTH: TAB SWITCH ═══════════ */
+        function switchAuthTab(tab) {
+            document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+            document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+            document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+            document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('loginError').textContent = '';
+            document.getElementById('registerError').textContent = '';
+        }
+
+        /* ═══════════ AUTH: REGISTER ═══════════ */
+        let regAvatarBase64 = null;
+
+        async function previewRegAvatar(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            try {
+                regAvatarBase64 = await fileToBase64(file);
+                document.getElementById('regAvatarPreview').innerHTML = `<img src="${regAvatarBase64}" alt="Avatar">`;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function handleRegister() {
+            const id = document.getElementById('regID').value.trim();
+            const name = document.getElementById('regName').value.trim();
+            const pw = document.getElementById('regPassword').value;
+            const errEl = document.getElementById('registerError');
+
+            if (!id) { errEl.textContent = '⚠ 請輸入使用者 ID'; return; }
+            if (/\s/.test(id)) { errEl.textContent = '⚠ ID 不可包含空白'; return; }
+            if (!name) { errEl.textContent = '⚠ 請輸入顯示名稱'; return; }
+            if (pw.length < 4) { errEl.textContent = '⚠ 密碼至少需 4 字元'; return; }
+
+            const users = getUsers();
+            if (users.find(u => u.userID === id)) {
+                errEl.textContent = '⚠ 此 ID 已被註冊';
+                return;
+            }
+
+            const newUser = {
+                userID: id,
+                username: name,
+                password: pw,
+                avatarURL: regAvatarBase64 || ''
+            };
+            users.push(newUser);
+            saveUsers(users);
+
+            // 清空表單
+            document.getElementById('regID').value = '';
+            document.getElementById('regName').value = '';
+            document.getElementById('regPassword').value = '';
+            document.getElementById('regAvatarPreview').innerHTML = '<i class="fas fa-user"></i>';
+            regAvatarBase64 = null;
+            errEl.textContent = '';
+
+            showToast('🎉 註冊成功！請登入');
+            switchAuthTab('login');
+        }
+
+        /* ═══════════ CAPTCHA LOGIC ═══════════ */
+        let pendingUser = null;
+        const captchaImages = [
+            { src: 'file:///C:/Users/User/.gemini/antigravity/brain/915c041b-6216-4f39-9365-74fedb3ab410/captcha_basketball_1_1779090595327.png', isTarget: true },
+            { src: 'file:///C:/Users/User/.gemini/antigravity/brain/915c041b-6216-4f39-9365-74fedb3ab410/captcha_basketball_2_1779090607980.png', isTarget: true },
+            { src: 'file:///C:/Users/User/.gemini/antigravity/brain/915c041b-6216-4f39-9365-74fedb3ab410/captcha_basketball_3_1779090622553.png', isTarget: true },
+            { src: 'file:///C:/Users/User/.gemini/antigravity/brain/915c041b-6216-4f39-9365-74fedb3ab410/captcha_soccer_1_1779090636724.png', isTarget: false },
+            { src: 'file:///C:/Users/User/.gemini/antigravity/brain/915c041b-6216-4f39-9365-74fedb3ab410/captcha_soccer_2_1779090648951.png', isTarget: false },
+            { src: 'file:///C:/Users/User/.gemini/antigravity/brain/915c041b-6216-4f39-9365-74fedb3ab410/captcha_baseball_1_1779090662910.png', isTarget: false },
+            { src: 'file:///C:/Users/User/.gemini/antigravity/brain/915c041b-6216-4f39-9365-74fedb3ab410/captcha_tennis_1_1779090676206.png', isTarget: false },
+            { src: 'file:///C:/Users/User/.gemini/antigravity/brain/915c041b-6216-4f39-9365-74fedb3ab410/captcha_football_1_1779090688088.png', isTarget: false },
+            { src: 'file:///C:/Users/User/.gemini/antigravity/brain/915c041b-6216-4f39-9365-74fedb3ab410/captcha_volleyball_1_1779090700319.png', isTarget: false }
+        ];
+        let currentCaptchaState = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function openCaptchaModal() {
+            document.getElementById('captchaError').textContent = '';
+            const grid = document.getElementById('captchaGrid');
+            grid.innerHTML = '';
+            
+            // 打亂圖片順序
+            let displayImages = [...captchaImages];
+            shuffleArray(displayImages);
+            currentCaptchaState = displayImages.map(img => ({ ...img, selected: false }));
+
+            currentCaptchaState.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'captcha-item';
+                div.innerHTML = `<img src="${item.src}" alt="captcha image">`;
+                div.onclick = () => toggleCaptchaSelection(index, div);
+                grid.appendChild(div);
+            });
+
+            document.getElementById('captchaModal').classList.add('show');
+        }
+
+        function toggleCaptchaSelection(index, element) {
+            currentCaptchaState[index].selected = !currentCaptchaState[index].selected;
+            if (currentCaptchaState[index].selected) {
+                element.classList.add('selected');
+            } else {
+                element.classList.remove('selected');
+            }
+        }
+
+        function closeCaptchaModal() {
+            document.getElementById('captchaModal').classList.remove('show');
+            pendingUser = null;
+        }
+
+        function verifyCaptcha() {
+            // 檢查是否選取了所有的籃球 (isTarget = true)，且沒有選錯
+            const isCorrect = currentCaptchaState.every(item => {
+                return (item.isTarget && item.selected) || (!item.isTarget && !item.selected);
+            });
+
+            if (isCorrect) {
+                // 驗證成功
+                document.getElementById('captchaModal').classList.remove('show');
+                
+                setCurrentUser({
+                    userID: pendingUser.userID,
+                    username: pendingUser.username,
+                    avatarURL: pendingUser.avatarURL
+                });
+
+                document.getElementById('loginID').value = '';
+                document.getElementById('loginPassword').value = '';
+                
+                updateNavbar();
+                showToast(`🏆 歡迎回來, ${pendingUser.username}！`);
+                navigate('profile');
+                pendingUser = null;
+            } else {
+                // 驗證失敗
+                document.getElementById('captchaError').textContent = '❌ 驗證失敗，請重新選取。';
+                // 重新整理九宮格
+                setTimeout(openCaptchaModal, 800);
+            }
+        }
+
+        /* ═══════════ AUTH: LOGIN ═══════════ */
+        function handleLogin() {
+            const id = document.getElementById('loginID').value.trim();
+            const pw = document.getElementById('loginPassword').value;
+            const errEl = document.getElementById('loginError');
+
+            if (!id || !pw) { errEl.textContent = '⚠ 請填寫完整欄位'; return; }
+
+            const users = getUsers();
+            const user = users.find(u => u.userID === id && u.password === pw);
+            if (!user) {
+                errEl.textContent = '⚠ ID 或密碼錯誤';
+                return;
+            }
+
+            // 觸發 2FA CAPTCHA
+            pendingUser = user;
+            errEl.textContent = '';
+            openCaptchaModal();
+        }
+
+        /* ═══════════ AUTH: LOGOUT ═══════════ */
+        function logout() {
+            clearCurrentUser();
+            updateNavbar();
+            showToast('👋 已登出');
+            navigate('feed');
+        }
+
+        /* ═══════════ MODAL ═══════════ */
+        function closeModal() {
+            document.getElementById('authModal').classList.remove('show');
+        }
+
+        /* ═══════════ LIGHTBOX ═══════════ */
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightbox').classList.add('show');
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('show');
+        }
+
+        /* ═══════════ EDITOR: SETUP ═══════════ */
+        let postImageBase64 = null;
+
+        function setupEditor() {
+            const user = getCurrentUser();
+            if (!user) return;
+            document.getElementById('editorAvatar').innerHTML = getAvatarHTML(user.avatarURL, user.username, 'md');
+            document.getElementById('editorName').textContent = user.username;
+            document.getElementById('editorID').textContent = '@' + user.userID;
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
+            document.getElementById('postImagePreview').style.display = 'none';
+            document.getElementById('postImagePreview').innerHTML = '';
+            document.getElementById('postImageArea').style.display = 'block';
+            postImageBase64 = null;
+        }
+
+        async function previewPostImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            try {
+                postImageBase64 = await fileToBase64(file);
+                const container = document.getElementById('postImagePreview');
+                container.innerHTML = `
+                    <img src="${postImageBase64}" alt="Preview">
+                    <button class="remove-image" onclick="removePostImage()"><i class="fas fa-times"></i></button>
+                `;
+                container.style.display = 'inline-block';
+                document.getElementById('postImageArea').style.display = 'none';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function removePostImage() {
+            postImageBase64 = null;
+            document.getElementById('postImagePreview').style.display = 'none';
+            document.getElementById('postImagePreview').innerHTML = '';
+            document.getElementById('postImageArea').style.display = 'block';
+            document.getElementById('postImageInput').value = '';
+        }
+
+        /* ═══════════ EDITOR: PUBLISH ═══════════ */
+        function handlePublish() {
+            const user = getCurrentUser();
+            if (!user) return;
+
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+
+            if (!title) { showToast('⚠ 請輸入發布主題'); return; }
+            if (!content) { showToast('⚠ 請輸入發布內容'); return; }
+
+            const newPost = {
+                postID: generateID(),
+                userID: user.userID,
+                username: user.username,
+                avatarURL: user.avatarURL,
+                title: title,
+                content: content,
+                imageURL: postImageBase64 || '',
+                timestamp: Date.now(),
+                likes: [],
+                comments: []
+            };
+
+            const posts = getPosts();
+            posts.unshift(newPost);
+            savePosts(posts);
+
+            postImageBase64 = null;
+            showToast('🎉 貼文發布成功！');
+            navigate('profile');
+        }
+
+        /* ═══════════ RENDER: POST CARD ═══════════ */
+        function renderPostCard(post, showCommentSection) {
+            const user = getCurrentUser();
+            const isLiked = user ? post.likes.includes(user.userID) : false;
+            const likeBtnClass = isLiked ? 'post-action-btn liked' : 'post-action-btn';
+
+            let imageHTML = '';
+            if (post.imageURL) {
+                imageHTML = `
+                    <div class="post-card-image">
+                        <img src="${post.imageURL}" alt="Post Image" onclick="openLightbox('${post.imageURL}')">
+                    </div>`;
+            }
+
+            let commentsHTML = '';
+            if (post.comments && post.comments.length > 0) {
+                commentsHTML = post.comments.map(c => `
+                    <div class="comment-item">
+                        <div class="comment-avatar">${getAvatarHTML(c.avatarURL, c.username, 'sm')}</div>
+                        <div class="comment-body">
+                            <div class="comment-author">${escapeHTML(c.username)}</div>
+                            <div class="comment-text">${escapeHTML(c.content)}</div>
+                            <div class="comment-time">${timeAgo(c.timestamp)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                commentsHTML = '<p style="color:var(--text-secondary);font-size:0.85rem;padding:12px 0;">暫無留言</p>';
+            }
+
+            let commentInputHTML = '';
+            if (user) {
+                commentInputHTML = `
+                    <div class="comment-input-wrap">
+                        <input type="text" id="commentInput-${post.postID}" placeholder="寫下你的留言..." onkeydown="if(event.key==='Enter')submitComment('${post.postID}')">
+                        <button class="comment-send-btn" onclick="submitComment('${post.postID}')"><i class="fas fa-paper-plane"></i></button>
+                    </div>`;
+            }
+
+            let deleteBtnHTML = '';
+            if (user && post.userID === user.userID) {
+                deleteBtnHTML = `<button style="margin-left:auto;background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:0.85rem;padding:4px 8px;border-radius:6px;transition:var(--transition);" 
+                    onmouseover="this.style.color='var(--accent-red)'" 
+                    onmouseout="this.style.color='var(--text-secondary)'" 
+                    onclick="deletePost('${post.postID}')" title="刪除貼文">
+                    <i class="fas fa-trash-alt"></i>
+                </button>`;
+            }
+
+            return `
+                <div class="post-card" id="card-${post.postID}">
+                    <div class="post-card-header">
+                        <div class="post-card-avatar" style="cursor:pointer;" onclick="navigate('profile', '${post.userID}')">${getAvatarHTML(post.avatarURL, post.username, 'md')}</div>
+                        <div class="post-card-meta">
+                            <div class="post-card-name" style="cursor:pointer;" onclick="navigate('profile', '${post.userID}')">${escapeHTML(post.username)} <span style="color:var(--text-secondary);font-size:0.8rem;">@${escapeHTML(post.userID)}</span></div>
+                            <div class="post-card-time">${timeAgo(post.timestamp)}</div>
+                        </div>
+                        ${deleteBtnHTML}
+                    </div>
+                    <div class="post-card-body">
+                        <div class="post-card-title">${escapeHTML(post.title)}</div>
+                        <div class="post-card-content">${escapeHTML(post.content)}</div>
+                    </div>
+                    ${imageHTML}
+                    <div class="post-card-footer">
+                        <button class="${likeBtnClass}" onclick="toggleLike('${post.postID}')">
+                            <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> ${post.likes.length}
+                        </button>
+                        <button class="post-action-btn" onclick="toggleComments('${post.postID}')">
+                            <i class="far fa-comment"></i> ${post.comments ? post.comments.length : 0}
+                        </button>
+                    </div>
+                    <div class="comments-section" id="comments-${post.postID}">
+                        ${commentsHTML}
+                        ${commentInputHTML}
+                    </div>
+                </div>`;
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        /* ═══════════ RENDER: FEED ═══════════ */
+        function renderFeed() {
+            const posts = getPosts();
+            const container = document.getElementById('feedPosts');
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-satellite-dish"></i>
+                        <p>目前還沒有任何貼文<br>成為第一個分享預測的人吧！🚀</p>
+                    </div>`;
+                return;
+            }
+            container.innerHTML = posts.map(p => renderPostCard(p, true)).join('');
+        }
+
+        /* ═══════════ RENDER: PROFILE ═══════════ */
+        function renderProfile(targetUserID = null) {
+            const currentUser = getCurrentUser();
+            let userToDisplay = currentUser;
+
+            if (targetUserID && (!currentUser || targetUserID !== currentUser.userID)) {
+                const users = getUsers();
+                userToDisplay = users.find(u => u.userID === targetUserID);
+            }
+
+            if (!userToDisplay) {
+                showToast('找不到該使用者');
+                navigate('feed');
+                return;
+            }
+
+            document.getElementById('profileAvatar').innerHTML = getAvatarHTML(userToDisplay.avatarURL, userToDisplay.username, 'lg');
+            document.getElementById('profileName').textContent = userToDisplay.username;
+            document.getElementById('profileID').textContent = '@' + userToDisplay.userID;
+
+            // 隱藏/顯示新增貼文按鈕
+            const newPostBtn = document.querySelector('.new-post-btn');
+            if (currentUser && userToDisplay.userID === currentUser.userID) {
+                newPostBtn.style.display = 'flex';
+            } else {
+                newPostBtn.style.display = 'none';
+            }
+
+            const posts = getPosts().filter(p => p.userID === userToDisplay.userID);
+            const container = document.getElementById('profilePosts');
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-basketball-ball"></i>
+                        <p>該使用者還沒有發布任何貼文</p>
+                    </div>`;
+                return;
+            }
+            container.innerHTML = posts.map(p => renderPostCard(p, true)).join('');
+        }
+
+        /* ═══════════ LIKE ═══════════ */
+        function toggleLike(postID) {
+            const user = getCurrentUser();
+            if (!user) {
+                document.getElementById('authModal').classList.add('show');
+                return;
+            }
+
+            const posts = getPosts();
+            const post = posts.find(p => p.postID === postID);
+            if (!post) return;
+
+            const idx = post.likes.indexOf(user.userID);
+            if (idx === -1) {
+                post.likes.push(user.userID);
+            } else {
+                post.likes.splice(idx, 1);
+            }
+            savePosts(posts);
+
+            // 即時更新畫面
+            if (currentPage === 'feed') renderFeed();
+            if (currentPage === 'profile') renderProfile();
+        }
+
+        /* ═══════════ COMMENTS TOGGLE ═══════════ */
+        function toggleComments(postID) {
+            const user = getCurrentUser();
+            const section = document.getElementById('comments-' + postID);
+
+            // 未登入者點評論 icon：僅查看留言（能展開但不能輸入）
+            // 但若要嚴格按需求「未登入點評論跳提示」，用以下邏輯：
+            if (!user) {
+                // 檢查是否有留言可看
+                const posts = getPosts();
+                const post = posts.find(p => p.postID === postID);
+                if (post && post.comments && post.comments.length > 0) {
+                    // 有留言 → 可展開查看
+                    section.classList.toggle('open');
+                } else {
+                    // 沒留言 → 跳提示
+                    document.getElementById('authModal').classList.add('show');
+                }
+                return;
+            }
+
+            section.classList.toggle('open');
+        }
+
+                /* ═══════════ SUBMIT COMMENT（完整版）═══════════ */
+        function submitComment(postID) {
+            const user = getCurrentUser();
+            if (!user) {
+                document.getElementById('authModal').classList.add('show');
+                return;
+            }
+
+            const inputEl = document.getElementById('commentInput-' + postID);
+            if (!inputEl) return;
+
+            const content = inputEl.value.trim();
+            if (!content) {
+                showToast('⚠ 請輸入留言內容');
+                return;
+            }
+
+            // 取得貼文並新增留言
+            const posts = getPosts();
+            const post = posts.find(p => p.postID === postID);
+            if (!post) return;
+
+            if (!post.comments) post.comments = [];
+
+            const newComment = {
+                commentID: 'c' + Date.now() + Math.random().toString(36).substring(2, 6),
+                userID: user.userID,
+                username: user.username,
+                avatarURL: user.avatarURL,
+                content: content,
+                timestamp: Date.now()
+            };
+
+            post.comments.push(newComment);
+            savePosts(posts);
+
+            // 清空輸入框
+            inputEl.value = '';
+
+            // 即時重新渲染當前頁面
+            if (currentPage === 'feed') renderFeed();
+            if (currentPage === 'profile') renderProfile();
+
+            // 確保留言區保持展開狀態
+            setTimeout(() => {
+                const section = document.getElementById('comments-' + postID);
+                if (section) section.classList.add('open');
+            }, 50);
+
+            showToast('💬 留言成功！');
+        }
+
+        /* ═══════════ DELETE POST（額外加碼：刪除自己的貼文）═══════════ */
+        function deletePost(postID) {
+            const user = getCurrentUser();
+            if (!user) return;
+
+            if (!confirm('確定要刪除這篇貼文嗎？此操作無法復原。')) return;
+
+            let posts = getPosts();
+            const postIndex = posts.findIndex(p => p.postID === postID);
+            if (postIndex === -1) return;
+
+            // 只允許刪除自己的貼文
+            if (posts[postIndex].userID !== user.userID) {
+                showToast('⚠ 你只能刪除自己的貼文');
+                return;
+            }
+
+            posts.splice(postIndex, 1);
+            savePosts(posts);
+
+            if (currentPage === 'feed') renderFeed();
+            if (currentPage === 'profile') renderProfile();
+
+            showToast('🗑️ 貼文已刪除');
+        }
+
+        /* ═══════════ SEARCH / FILTER（額外加碼：搜尋貼文）═══════════ */
+        function searchPosts(keyword) {
+            if (!keyword || !keyword.trim()) return getPosts();
+            const kw = keyword.trim().toLowerCase();
+            return getPosts().filter(p =>
+                p.title.toLowerCase().includes(kw) ||
+                p.content.toLowerCase().includes(kw) ||
+                p.username.toLowerCase().includes(kw)
+            );
+        }
+
+        /* ═══════════ KEYBOARD SHORTCUTS ═══════════ */
+        document.addEventListener('keydown', function(e) {
+            // ESC 關閉所有彈窗
+            if (e.key === 'Escape') {
+                closeModal();
+                closeLightbox();
+            }
+        });
+
+        /* ═══════════ CLICK OUTSIDE MODAL → CLOSE ═══════════ */
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        /* ═══════════ PREVENT ENTER SUBMIT ON AUTH FORMS ═══════════ */
+        document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') handleLogin();
+        });
+        document.getElementById('regPassword').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') handleRegister();
+        });
+
+        /* ═══════════ SEED DEMO DATA（首次造訪產生範例資料）═══════════ */
+        function seedDemoData() {
+            const users = getUsers();
+            const posts = getPosts();
+
+            // 只有在完全沒有資料時才產生
+            if (users.length > 0 || posts.length > 0) return;
+
+            const demoUsers = [
+                { userID: 'sportking', username: '運彩之王', password: '1234', avatarURL: '' },
+                { userID: 'nba_fan', username: 'NBA狂粉', password: '1234', avatarURL: '' },
+                { userID: 'soccer_pro', username: '足球分析師', password: '1234', avatarURL: '' }
+            ];
+
+            const now = Date.now();
+            const demoPosts = [
+                {
+                    postID: generateID(),
+                    userID: 'sportking',
+                    username: '運彩之王',
+                    avatarURL: '',
+                    title: '🏀 今日 NBA 推薦：湖人 vs 塞爾提克',
+                    content: '今天這場比賽我看好湖人讓分過盤！\n\n理由：\n1. LeBron 近 5 場場均 32 分\n2. 塞爾提克客場勝率偏低\n3. 主場優勢明顯\n\n推薦：湖人 -3.5 ✅\n信心指數：⭐⭐⭐⭐',
+                    imageURL: '',
+                    timestamp: now - 3600000,
+                    likes: ['nba_fan'],
+                    comments: [
+                        {
+                            commentID: 'c001',
+                            userID: 'nba_fan',
+                            username: 'NBA狂粉',
+                            avatarURL: '',
+                            content: '同意！湖人主場很猛，跟單了 💪',
+                            timestamp: now - 1800000
+                        }
+                    ]
+                },
+                {
+                    postID: generateID(),
+                    userID: 'soccer_pro',
+                    username: '足球分析師',
+                    avatarURL: '',
+                    title: '⚽ 英超重點分析：曼城 vs 阿森納',
+                    content: '本週英超焦點戰！\n\n曼城近期狀態火熱，連續 8 場不敗。阿森納雖然排名第一，但客場面對曼城歷史戰績不佳。\n\n推薦：大 2.5 球 ✅\n兩隊攻擊力都很強，預計會是一場進球大戰！',
+                    imageURL: '',
+                    timestamp: now - 7200000,
+                    likes: ['sportking', 'nba_fan'],
+                    comments: [
+                        {
+                            commentID: 'c002',
+                            userID: 'sportking',
+                            username: '運彩之王',
+                            avatarURL: '',
+                            content: '足球分析很到位，大球看好 🔥',
+                            timestamp: now - 5400000
+                        },
+                        {
+                            commentID: 'c003',
+                            userID: 'nba_fan',
+                            username: 'NBA狂粉',
+                            avatarURL: '',
+                            content: '雖然我比較關注 NBA，但這場也想跟看看 😄',
+                            timestamp: now - 3200000
+                        }
+                    ]
+                },
+                {
+                    postID: generateID(),
+                    userID: 'nba_fan',
+                    username: 'NBA狂粉',
+                    avatarURL: '',
+                    title: '🎯 本週戰績回報：5 勝 1 敗！',
+                    content: '分享一下本週的運彩戰績：\n\n✅ 湖人 -3.5（過）\n✅ 勇士大分（過）\n✅ 公鹿獨贏（過）\n✅ 塞爾提克小分（過）\n✅ 金塊讓分（過）\n❌ 太陽獨贏（沒過）\n\n整體勝率 83%，繼續保持！有問題歡迎留言討論 📊',
+                    imageURL: '',
+                    timestamp: now - 600000,
+                    likes: ['sportking', 'soccer_pro'],
+                    comments: []
+                }
+            ];
+
+            saveUsers(demoUsers);
+            savePosts(demoPosts);
+        }
+
+        /* ═══════════ APP INIT ═══════════ */
+        function initApp() {
+            // 產生範例資料（僅首次）
+            seedDemoData();
+
+            // 更新導覽列
+            updateNavbar();
+
+            // 預設顯示分享區
+            navigate('feed');
+
+            // 關閉 loading 畫面
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hide');
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 500);
+            }, 800);
+        }
+
+        // 啟動
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
+        
+         
